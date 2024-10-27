@@ -1,0 +1,13 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  rabbitmq:
+    additionalConfig: |
+      management.tcp.port = 15672
+      default_user= secretUser 
+      default_pass = secretPassword
+  service:
+    type: NodePort
