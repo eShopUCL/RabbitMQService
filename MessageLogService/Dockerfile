@@ -25,3 +25,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /MessageLogService/publish .
 ENTRYPOINT ["dotnet", "MessageLogService.dll"]
+
+# cmd to build the image and push it to the registry
+# docker buildx build --pull -t messagelogservice 
+# docker tag messagelogservice eshopregistry.azurecr.io/messagelogservice:latest
+# az acr login --name eshopregistry
+# docker push eshopregistry.azurecr.io/messagelogservice:latest
