@@ -1,3 +1,7 @@
+# This is a sample RabbitMQ cluster configuration file.
+# The RabbitMQ cluster is deployed with a single node on port 15672, management plugin is enabled.
+# Image are pulled from the official RabbitMQ image (default).
+
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
