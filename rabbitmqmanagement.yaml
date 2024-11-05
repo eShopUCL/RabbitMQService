@@ -1,6 +1,7 @@
 # This is a sample RabbitMQ cluster configuration file.
 # The RabbitMQ cluster is deployed with a single node on port 15672, management plugin is enabled.
 # Image are pulled from the official RabbitMQ image (default).
+# resources are lower than the default values to save resources.
 
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
@@ -15,3 +16,10 @@ spec:
       default_pass = secretPassword
   service:
     type: NodePort
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
