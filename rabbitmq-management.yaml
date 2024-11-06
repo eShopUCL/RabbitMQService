@@ -16,18 +16,16 @@ spec:
       management.tcp.port = 15672
       default_user = secretUser
       default_pass = secretPassword
-  service:
-    type: ClusterIP  # Using ClusterIP for internal access, external access via Traefik
   resources:
     requests:
       memory: "256Mi"
       cpu: "100m"
     limits:
-      memory: "512Mi"
+      memory: "256Mi"
       cpu: "200m"
 
----
-# Service configuration for RabbitMQ
+# ---
+# # Service configuration for RabbitMQ
 apiVersion: v1
 kind: Service
 metadata:

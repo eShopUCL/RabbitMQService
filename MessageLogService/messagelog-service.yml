@@ -8,6 +8,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: messagelog-service
+  namespace: rabbitmq-system
 spec:
   replicas: 1
   selector:
@@ -28,10 +29,10 @@ spec:
             memory: "256Mi"
             cpu: "100m"
           limits:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "200m"
         env:
-        # Connection to the RabbitMQ service
+        # Connection string to the RabbitMQ service
         - name: RABBITMQ_HOST
           value: "rabbitmq-management.rabbitmq-system.svc.cluster.local"
         - name: RABBITMQ_PORT
