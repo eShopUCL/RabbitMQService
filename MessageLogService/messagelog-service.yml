@@ -1,0 +1,51 @@
+# This file is a sample configuration file for the MessageLogService deployment.
+# The MessageLogService is deployed with a single node on port 80.
+# Image are pulled from the private registry (eshopregistry.azurecr.io).
+# Resources are lower than the default values to save resources.
+# Network are configured to use ClusterIP for internal access, external access via Traefik.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messagelog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messagelog-service
+  template:
+    metadata:
+      labels:
+        app: messagelog-service
+    spec:
+      containers:
+      - name: messagelog-service
+        image: eshopregistry.azurecr.io/messagelogservice:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        env:
+        # Connection to the RabbitMQ service
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-management.rabbitmq-system.svc.cluster.local"
+        - name: RABBITMQ_PORT
+          value: "5672"  # Default RabbitMQ port for AMQP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messagelog-service
+spec:
+  selector:
+    app: messagelog-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
