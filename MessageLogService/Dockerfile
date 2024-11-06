@@ -31,3 +31,7 @@ ENTRYPOINT ["dotnet", "MessageLogService.dll"]
 # docker tag messagelogservice eshopregistry.azurecr.io/messagelogservice:latest
 # az acr login --name eshopregistry
 # docker push eshopregistry.azurecr.io/messagelogservice:latest
+
+## To build the image for linux/amd64 for kubernetes cluster
+# docker build --platform linux/amd64 -t eshopregistry.azurecr.io/messagelogservice:latest .
+
