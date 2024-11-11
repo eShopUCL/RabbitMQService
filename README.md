@@ -2,11 +2,12 @@
 
 ## Overview
 
-This project sets up a RabbitMQ cluster on Kubernetes, with a single-node deployment and Traefik ingress for external access to the RabbitMQ management interface. The setup uses a custom Ingress to route traffic through Traefik and includes essential configurations for RabbitMQ authentication and resource management.
+This project sets up a microservice with a RabbitMQ cluster on Kubernetes, with a single-node deployment and Traefik ingress for external access to the RabbitMQ management interface. The setup uses a custom Ingress to route traffic through Traefik and includes essential configurations for RabbitMQ authentication and resource management. 
 
 - **`rabbitmq-management.yml`**: Defines the RabbitMQ cluster, service, and resource limits.
 - **`rabbitmq-ingress.yml`**: Configures Traefik ingress to expose the RabbitMQ management interface.
 - **`rabbitmq-cluster-operator.yml`**: Deploys the RabbitMQ Cluster Operator in Kubernetes.
+- **`MessageLogService`**: Deploys a RabbitMQ log application, see additional info in the readme file, within the subfolder.
 
 ## Features
 

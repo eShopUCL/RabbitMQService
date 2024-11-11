@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `MessageLogService` is a microservice designed to listen to RabbitMQ dead-letter and invalid-message queues, process the messages, and forward them to Logstash for further analysis and logging.
+The `MessageLogService` is a console application designed to listen to RabbitMQ dead-letter and invalid-message queues, process the messages, and forward them to Logstash for further analysis and logging.
 
 The service is configured to run as a Kubernetes Deployment. It runs one replica with limited resource requests to conserve resources.
 
