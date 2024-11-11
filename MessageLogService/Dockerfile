@@ -1,3 +1,16 @@
+### Ths file is used to build the docker image for the MessageLogService project ###
+#
+## cmd to build the image and push it to the registry:
+# docker buildx build --pull -t messagelogservice
+#
+## To build the image for linux/amd64 for kubernetes cluster
+# docker build --platform linux/amd64 -t eshopregistry.azurecr.io/messagelogservice:latest .
+#
+## To push the image to the registry
+# docker tag messagelogservice eshopregistry.azurecr.io/messagelogservice:latest
+# az acr login --name eshopregistry
+# docker push eshopregistry.azurecr.io/messagelogservice:latest
+
 # Base runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /MessageLogService
@@ -26,12 +39,5 @@ WORKDIR /app
 COPY --from=publish /MessageLogService/publish .
 ENTRYPOINT ["dotnet", "MessageLogService.dll"]
 
-# cmd to build the image and push it to the registry
-# docker buildx build --pull -t messagelogservice 
-# docker tag messagelogservice eshopregistry.azurecr.io/messagelogservice:latest
-# az acr login --name eshopregistry
-# docker push eshopregistry.azurecr.io/messagelogservice:latest
 
-## To build the image for linux/amd64 for kubernetes cluster
-# docker build --platform linux/amd64 -t eshopregistry.azurecr.io/messagelogservice:latest .
 
