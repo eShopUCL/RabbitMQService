@@ -31,12 +31,7 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
-        env:
-        # Connection string to the RabbitMQ service
-        - name: RABBITMQ_HOST
-          value: "rabbitmq-management.rabbitmq-system.svc.cluster.local"
-        - name: RABBITMQ_PORT
-          value: "5672"  # Default RabbitMQ port for AMQP
+        # Removed 'env' section
 ---
 apiVersion: v1
 kind: Service
