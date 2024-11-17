@@ -37,7 +37,7 @@ public class MessageLogServiceTests : IAsyncLifetime
     // This test verifies that the MessageLogService can consume messages from the dead letter queue.
     // This is an integration test that requires a running RabbitMQ server.
     [Fact]
-    public async Task StartDeadLetterConsumerShouldConsumeMessages()
+    public async Task StartDeadLetterConsumer_ShouldConsumeMessages()
     {
         // Create a connection factory using the RabbitMQ container's connection string
         var factory = new ConnectionFactory { Uri = new Uri(_rabbitMqContainer.GetConnectionString()) };
@@ -59,18 +59,21 @@ public class MessageLogServiceTests : IAsyncLifetime
 
         // Use the StartDeadLetterConsumer method from the MessageLogService to consume messages
         MessageLogService.Program.StartDeadLetterConsumer(channel, MessageHandler);
-        
+
         // Publish a test message to the dead letter exchange, then wait for the message to be consumed
-        PublishTestMessage(channel);
-        await Task.Delay(100);
+        CreateDeadLetterMessage(channel);
+
+        // Allow some time for the message to reach the dead letter queue
+        await Task.Delay(500);
 
         // Assert that the received message body matches the expected message
-        receivedMessage.Should().Be("Test dead letter message");
+        receivedMessage.Should().Be("Test dead letter message", because: "the message should be consumed from the dead letter queue");
     }
 
-    // Test that messages rejected by a mocked consumer are moved to the dead letter queue
+    // This test verifies that the MessageLogService can consume rejected messages
+    // and forward them to the invalid message queue.
     [Fact]
-    public async Task StartDeadLetterConsumer_ShouldMoveRejectedMessagesToDeadLetterQueue()
+    public async Task StartInvalidMessageConsumer_ShouldConsumeRejectedMessagesToInvalidLetterQueue()
     {
         // Create a connection factory using the RabbitMQ container's connection string
         var factory = new ConnectionFactory { Uri = new Uri(_rabbitMqContainer.GetConnectionString()) };
@@ -93,24 +96,19 @@ public class MessageLogServiceTests : IAsyncLifetime
         // Start consuming from the dead letter queue
         MessageLogService.Program.StartInvalidMessageConsumer(channel, MessageHandler);
 
-        // Publish a test message to the "testQueue" and simulate rejection
-        await WaitForMessage(async () =>
-        {
-            PublishTestMessageToTestQueue(channel);
+        // Publish a test message to the "testQueue"
+        PublishTestMessageToTestQueue(channel);
 
-            // Reject the message to simulate an invalid message
-            RejectMessage(channel);
+        // Reject the message to simulate an invalid message
+        RejectMessage(channel);
 
-            // Allow some time for the message to reach the dead letter queue
-            await Task.Delay(1000);
-        });
+        // Allow some time for the message to reach the dead letter queue
+        await Task.Delay(500);
 
-        // Assert that the message in the dead letter queue matches the expected value
-        receivedMessage.Should().Be("Test message", because: "the rejected message should be routed to the dead letter queue");
-
+       // Assert that the received message body matches the expected message
+        receivedMessage.Should().Be("Test message", because: "the rejected message should be routed to the invalid message queue");
     }
     
-
     /// 
     /// Helper methods
     /// 
@@ -136,7 +134,7 @@ public class MessageLogServiceTests : IAsyncLifetime
     }
 
     // Publish a test message to the dead letter exchange from the channel created on the mock RabbitMQ server
-    private static void PublishTestMessage(IModel channel)
+    private static void CreateDeadLetterMessage(IModel channel)
     {
         var body = Encoding.UTF8.GetBytes("Test dead letter message");
         channel.BasicPublish(DeadLetterExchange, DeadLetterRoutingKey, null, body);
@@ -159,23 +157,5 @@ public class MessageLogServiceTests : IAsyncLifetime
         {
             channel.BasicReject(ea.DeliveryTag, requeue: false);
         };
-    }
-
-    // Helper method to wait for a message to be received
-    public async Task<string> WaitForMessage(Func<Task> action, int timeoutMs = 5000)
-    {
-        string receivedMessage = string.Empty;
-        var start = DateTime.UtcNow;
-
-        // Run the action that will produce the message
-        await action();
-
-        // Poll for the message
-        while (string.IsNullOrEmpty(receivedMessage) && (DateTime.UtcNow - start).TotalMilliseconds < timeoutMs)
-        {
-            await Task.Delay(100);
-        }
-
-        return receivedMessage;
     }
 }
