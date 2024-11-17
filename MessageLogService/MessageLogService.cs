@@ -26,7 +26,7 @@ namespace MessageLogService
 
       // Start consumers
       StartDeadLetterConsumer(channel, ForwardMessages);
-      StartInvalidMessageConsumer(channel);
+      StartInvalidMessageConsumer(channel, ForwardMessages);
 
       Console.WriteLine("Press [enter] to exit and shutdown the application.");
       await Task.Delay(Timeout.Infinite);
@@ -48,7 +48,7 @@ namespace MessageLogService
     }
 
     // Dead letters are messages that were not delivered to any consumer after several attempts. 
-    public static void StartDeadLetterConsumer(IModel channel, Func<string, Task> messageHandler)
+    public static void StartDeadLetterConsumer(IModel channel, Func<string, Task> ForwardMessages)
 {
     const string deadLetterQueue = "deadLetterQueue";
 
@@ -74,7 +74,9 @@ namespace MessageLogService
     consumer.Received += async (model, ea) =>
     {
         var message = Encoding.UTF8.GetString(ea.Body.ToArray());
-        await messageHandler(message);
+        Console.WriteLine($"Received dead letter: {message}");
+
+        await ForwardMessages(message);
 
         // Acknowledge the message to remove it from the queue
         channel.BasicAck(ea.DeliveryTag, false);
@@ -88,7 +90,7 @@ namespace MessageLogService
     );
 }
     // Invalid messages are messages that were rejected by the consumer.
-    public static void StartInvalidMessageConsumer(IModel channel)
+    public static void StartInvalidMessageConsumer(IModel channel, Func<string, Task> ForwardMessages)
     {
       const string invalidMessageQueue = "invalidMessageQueue";
 
