@@ -28,4 +28,4 @@ jobs:
         run: dotnet build RabbitMQService.sln --no-restore --configuration Release
 
       - name: Run Tests
-        run: dotnet test RabbitMQService/RabbitMQTests/RabbitMQTests.csproj --no-build --configuration Release --verbosity normal
+        run: dotnet test RabbitMQTests/RabbitMQTests.csproj --no-build --configuration Release --verbosity normal
