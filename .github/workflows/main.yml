@@ -1,0 +1,31 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore RabbitMQService.sln
+
+      - name: Build the solution
+        run: dotnet build RabbitMQService.sln --no-restore --configuration Release
+
+      - name: Run Tests
+        run: dotnet test RabbitMQService/RabbitMQTests/RabbitMQTests.csproj --no-build --configuration Release --verbosity normal
